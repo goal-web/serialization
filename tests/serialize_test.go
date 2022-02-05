@@ -2,7 +2,9 @@ package tests
 
 import (
 	"fmt"
+	"github.com/goal-web/serialization"
 	"github.com/goal-web/serialization/serializers"
+	"github.com/goal-web/supports/class"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -11,6 +13,10 @@ type User struct {
 	Id   string `json:"id"`
 	Name string `json:"name"`
 }
+
+var (
+	UserClass = class.Make(new(User))
+)
 
 func TestJsonSerialize(t *testing.T) {
 
@@ -41,6 +47,22 @@ func TestGobSerialize(t *testing.T) {
 	var user User
 	assert.Nil(t, gob.Unserialize(jsonStr, &user))
 	fmt.Println(user)
+}
+
+func TestClassSerializer(t *testing.T) {
+	serializer := serialization.NewClassSerializer()
+
+	serializer.Register(UserClass)
+
+	serialized := serializer.Serialize(User{
+		Id:   "1996",
+		Name: "qbhy",
+	})
+
+	fmt.Println("serialized", serialized)
+	user, err := serializer.Parse(serialized)
+	assert.Nil(t, err)
+	assert.True(t, user.(User).Id == "1996")
 }
 
 /**
