@@ -5,6 +5,7 @@ import (
 	"github.com/goal-web/contracts"
 	"github.com/goal-web/serialization/serializers"
 	"github.com/goal-web/supports/class"
+	"reflect"
 )
 
 type Class struct {
@@ -45,10 +46,11 @@ func (this *Serializer) Parse(serialized string) (interface{}, error) {
 		return nil, errors.New("unregistered class")
 	}
 
-	var fields contracts.Fields
-	if err := this.serializer.Unserialize(c.Payload, &fields); err != nil {
+	instance := reflect.New(this.classes[c.Class].GetType()).Interface()
+
+	if err := this.serializer.Unserialize(c.Payload, instance); err != nil {
 		return nil, err
 	}
 
-	return this.classes[c.Class].New(fields), nil
+	return instance, nil
 }

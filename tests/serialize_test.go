@@ -14,6 +14,12 @@ type User struct {
 	Name string `json:"name"`
 }
 
+type Detail struct {
+	Title     string `json:"title"`
+	User      User   `json:"user"`
+	Followers []User `json:"followers"`
+}
+
 var (
 	UserClass = class.Make(new(User))
 )
@@ -32,6 +38,35 @@ func TestJsonSerialize(t *testing.T) {
 	var user User
 	assert.Nil(t, json.Unserialize(jsonStr, &user))
 	fmt.Println(user)
+}
+
+func TestComplexJsonSerialize(t *testing.T) {
+
+	json := serializers.Json{}
+
+	jsonStr := json.Serialize(Detail{
+		Title: "goal",
+		User: User{
+			Id:   "10086",
+			Name: "goal",
+		},
+		Followers: []User{
+			{
+				Id:   "1",
+				Name: "goal",
+			},
+			{
+				Id:   "2",
+				Name: "goal",
+			},
+		},
+	})
+	fmt.Println(jsonStr)
+	assert.True(t, "{\"title\":\"goal\",\"user\":{\"id\":\"10086\",\"name\":\"goal\"},\"followers\":[{\"id\":\"1\",\"name\":\"goal\"},{\"id\":\"2\",\"name\":\"goal\"}]}" == jsonStr)
+
+	var detail Detail
+	assert.Nil(t, json.Unserialize(jsonStr, &detail))
+	fmt.Println(detail)
 }
 
 func TestGobSerialize(t *testing.T) {
@@ -53,16 +88,67 @@ func TestClassSerializer(t *testing.T) {
 	serializer := serialization.NewClassSerializer()
 
 	serializer.Register(UserClass)
+	serializer.Register(class.Make(new(Detail)))
 
-	serialized := serializer.Serialize(User{
-		Id:   "1996",
-		Name: "qbhy",
+	serialized := serializer.Serialize(Detail{
+		Title: "goal",
+		User: User{
+			Id:   "10086",
+			Name: "goal",
+		},
+		Followers: []User{
+			{
+				Id:   "1",
+				Name: "goal",
+			},
+			{
+				Id:   "2",
+				Name: "goal",
+			},
+		},
 	})
 
 	fmt.Println("serialized", serialized)
-	user, err := serializer.Parse(serialized)
+	detail, err := serializer.Parse(serialized)
 	assert.Nil(t, err)
-	assert.True(t, user.(User).Id == "1996")
+	assert.True(t, detail.(*Detail).Title == "goal")
+	fmt.Println(detail)
+}
+
+/**
+goos: darwin
+goarch: amd64
+pkg: github.com/goal-web/serialization/tests
+cpu: Intel(R) Core(TM) i7-7660U CPU @ 2.50GHz
+BenchmarkClassSerialize
+BenchmarkClassSerialize-4   	   95265	     11996 ns/op
+*/
+func BenchmarkClassSerialize(b *testing.B) {
+	serializer := serialization.NewClassSerializer()
+
+	serializer.Register(class.Make(new(Detail)))
+	detail := Detail{
+		Title: "goal",
+		User: User{
+			Id:   "10086",
+			Name: "goal",
+		},
+		Followers: []User{
+			{
+				Id:   "1",
+				Name: "goal",
+			},
+			{
+				Id:   "2",
+				Name: "goal",
+			},
+		},
+	}
+
+	for i := 0; i < b.N; i++ {
+		serialized := serializer.Serialize(detail)
+		_, _ = serializer.Parse(serialized)
+	}
 }
 
 /**

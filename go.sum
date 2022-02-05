@@ -4,6 +4,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/goal-web/contracts v0.1.30 h1:8V+gdTpVNN8JIoHRgyW3wQw2+oq8svc4tmP1CK96RyE=
 github.com/goal-web/contracts v0.1.30/go.mod h1:lKHynU2Kgk6xyxL4afOJM4TO1kSa3RrCJ2bm5RtFMBw=
+github.com/goal-web/contracts v0.1.31 h1:hkE2twv4WNpNx+JzzCXyEQILE7y5kjX48kLaB8ppv5g=
+github.com/goal-web/contracts v0.1.31/go.mod h1:lKHynU2Kgk6xyxL4afOJM4TO1kSa3RrCJ2bm5RtFMBw=
 github.com/goal-web/supports v0.1.12 h1:upnHi9tn+kartpXPlBdAV8xXR8T+tn0Grt+oCJGD0Mc=
 github.com/goal-web/supports v0.1.12/go.mod h1:QAvaUh/dtKUA027AvZaPPk5y/E1wlfJieEJoDDcQdOE=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
