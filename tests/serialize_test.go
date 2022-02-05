@@ -42,3 +42,47 @@ func TestGobSerialize(t *testing.T) {
 	assert.Nil(t, gob.Unserialize(jsonStr, &user))
 	fmt.Println(user)
 }
+
+/**
+goos: darwin
+goarch: amd64
+pkg: github.com/goal-web/serialization/tests
+cpu: Intel(R) Core(TM) i7-7660U CPU @ 2.50GHz
+BenchmarkJsonSerialize
+BenchmarkJsonSerialize-4   	  894805	      1673 ns/op
+*/
+func BenchmarkJsonSerialize(b *testing.B) {
+	serializer := serializers.Json{}
+	for i := 0; i < b.N; i++ {
+
+		jsonStr := serializer.Serialize(User{
+			Id:   "10086",
+			Name: "goal",
+		})
+
+		var user User
+		_ = serializer.Unserialize(jsonStr, &user)
+	}
+}
+
+/**
+goos: darwin
+goarch: amd64
+pkg: github.com/goal-web/serialization/tests
+cpu: Intel(R) Core(TM) i7-7660U CPU @ 2.50GHz
+BenchmarkGobSerialize
+BenchmarkGobSerialize-4   	   46285	     22629 ns/op
+*/
+func BenchmarkGobSerialize(b *testing.B) {
+	serializer := serializers.Gob{}
+	for i := 0; i < b.N; i++ {
+
+		jsonStr := serializer.Serialize(User{
+			Id:   "10086",
+			Name: "goal",
+		})
+
+		var user User
+		_ = serializer.Unserialize(jsonStr, &user)
+	}
+}
