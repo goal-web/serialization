@@ -13,14 +13,16 @@ type Class struct {
 	Payload string `json:"p"`
 }
 
-func NewClassSerializer() contracts.ClassSerializer {
+func NewClassSerializer(container contracts.Container) contracts.ClassSerializer {
 	return &Serializer{
+		container:  container,
 		classes:    map[string]contracts.Class{},
 		serializer: serializers.Json{},
 	}
 }
 
 type Serializer struct {
+	container  contracts.Container
 	classes    map[string]contracts.Class
 	serializer contracts.Serializer
 }
@@ -50,6 +52,11 @@ func (this *Serializer) Parse(serialized string) (interface{}, error) {
 
 	if err := this.serializer.Unserialize(c.Payload, instance); err != nil {
 		return nil, err
+	}
+
+	if component, isComponent := instance.(contracts.Component); isComponent {
+		component.Construct(this.container)
+		return component, nil
 	}
 
 	return instance, nil
