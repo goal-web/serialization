@@ -2,6 +2,7 @@ package tests
 
 import (
 	"fmt"
+	"github.com/goal-web/container"
 	"github.com/goal-web/serialization"
 	"github.com/goal-web/serialization/serializers"
 	"github.com/goal-web/supports/class"
@@ -10,8 +11,8 @@ import (
 )
 
 type User struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
+	Id   string `json:"id" xml:"id"`
+	Name string `json:"name" xml:"name"`
 }
 
 type Detail struct {
@@ -37,6 +38,19 @@ func TestJsonSerialize(t *testing.T) {
 
 	var user User
 	assert.Nil(t, json.Unserialize(jsonStr, &user))
+	fmt.Println(user)
+}
+
+func TestXmlSerialize(t *testing.T) {
+	serializer := serializers.Xml{}
+	serialized := serializer.Serialize(User{
+		Id:   "10086",
+		Name: "goal",
+	})
+	fmt.Println(serialized)
+	var user User
+	assert.True(t, serialized == "<User><id>10086</id><name>goal</name></User>")
+	assert.Nil(t, serializer.Unserialize(serialized, &user))
 	fmt.Println(user)
 }
 
@@ -85,7 +99,7 @@ func TestGobSerialize(t *testing.T) {
 }
 
 func TestClassSerializer(t *testing.T) {
-	serializer := serialization.NewClassSerializer()
+	serializer := serialization.NewClassSerializer(container.New())
 
 	serializer.Register(UserClass)
 	serializer.Register(class.Make(new(Detail)))
@@ -124,7 +138,7 @@ BenchmarkClassSerialize
 BenchmarkClassSerialize-4   	   95265	     11996 ns/op
 */
 func BenchmarkClassSerialize(b *testing.B) {
-	serializer := serialization.NewClassSerializer()
+	serializer := serialization.NewClassSerializer(container.New())
 
 	serializer.Register(class.Make(new(Detail)))
 	detail := Detail{
@@ -183,6 +197,28 @@ BenchmarkGobSerialize-4   	   46285	     22629 ns/op
 */
 func BenchmarkGobSerialize(b *testing.B) {
 	serializer := serializers.Gob{}
+	for i := 0; i < b.N; i++ {
+
+		jsonStr := serializer.Serialize(User{
+			Id:   "10086",
+			Name: "goal",
+		})
+
+		var user User
+		_ = serializer.Unserialize(jsonStr, &user)
+	}
+}
+
+/**
+goos: darwin
+goarch: amd64
+pkg: github.com/goal-web/serialization/tests
+cpu: Intel(R) Core(TM) i7-7660U CPU @ 2.50GHz
+BenchmarkXmlSerialize
+BenchmarkXmlSerialize-4   	  188887	      5706 ns/op
+*/
+func BenchmarkXmlSerialize(b *testing.B) {
+	serializer := serializers.Xml{}
 	for i := 0; i < b.N; i++ {
 
 		jsonStr := serializer.Serialize(User{

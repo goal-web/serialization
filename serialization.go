@@ -9,6 +9,7 @@ func New() contracts.Serialization {
 	return &Serialization{serializers: map[string]contracts.Serializer{
 		"json": serializers.Json{},
 		"gob":  serializers.Gob{},
+		"xml":  serializers.Xml{},
 	}}
 }
 
