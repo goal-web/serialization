@@ -3,7 +3,7 @@ module github.com/goal-web/serialization
 go 1.17
 
 require (
-	github.com/goal-web/contracts v0.1.32
+	github.com/goal-web/contracts v0.1.33
 	github.com/stretchr/testify v1.7.0
 )
 

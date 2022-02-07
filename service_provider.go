@@ -12,8 +12,8 @@ func (s ServiceProvider) Register(application contracts.Application) {
 	application.Singleton("serializer", func(serialization contracts.Serialization) contracts.Serializer {
 		return serialization.Method("json")
 	})
-	application.Singleton("class.serializer", func(app contracts.Application) contracts.ClassSerializer {
-		return NewClassSerializer(app)
+	application.Singleton("class.serializer", func() contracts.ClassSerializer {
+		return NewClassSerializer(application)
 	})
 }
 
