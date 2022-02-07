@@ -1,6 +1,8 @@
 package serialization
 
-import "github.com/goal-web/contracts"
+import (
+	"github.com/goal-web/contracts"
+)
 
 type ServiceProvider struct {
 	app contracts.Application
@@ -11,8 +13,8 @@ func (this *ServiceProvider) Register(application contracts.Application) {
 	application.Singleton("serialization", func() contracts.Serialization {
 		return New()
 	})
-	application.Singleton("serializer", func(serialization contracts.Serialization) contracts.Serializer {
-		return serialization.Method("json")
+	application.Singleton("serializer", func(config contracts.Config, serialization contracts.Serialization) contracts.Serializer {
+		return serialization.Method(config.Get("serialization").(Config).Default)
 	})
 	application.Singleton("class.serializer", func() contracts.ClassSerializer {
 		return NewClassSerializer(application)
