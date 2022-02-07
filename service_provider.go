@@ -3,9 +3,11 @@ package serialization
 import "github.com/goal-web/contracts"
 
 type ServiceProvider struct {
+	app contracts.Application
 }
 
-func (s ServiceProvider) Register(application contracts.Application) {
+func (this *ServiceProvider) Register(application contracts.Application) {
+	this.app = application
 	application.Singleton("serialization", func() contracts.Serialization {
 		return New()
 	})
@@ -17,9 +19,14 @@ func (s ServiceProvider) Register(application contracts.Application) {
 	})
 }
 
-func (s ServiceProvider) Start() error {
+func (this *ServiceProvider) Start() error {
+	this.app.Call(func(config contracts.Config, serializer contracts.ClassSerializer) {
+		for _, class := range config.Get("serialization").(Config).Class {
+			serializer.Register(class)
+		}
+	})
 	return nil
 }
 
-func (s ServiceProvider) Stop() {
+func (this *ServiceProvider) Stop() {
 }
