@@ -134,10 +134,83 @@ goos: darwin
 goarch: amd64
 pkg: github.com/goal-web/serialization/tests
 cpu: Intel(R) Core(TM) i7-7660U CPU @ 2.50GHz
+BenchmarkClassUnserialize
+BenchmarkClassUnserialize-4   	  187540	      6283 ns/op
+*/
+func BenchmarkClassUnserialize(b *testing.B) {
+	serializer := serialization.NewClassSerializer(container.New())
+
+	serializer.Register(UserClass)
+	serializer.Register(class.Make(new(Detail)))
+
+	serialized := serializer.Serialize(Detail{
+		Title: "goal",
+		User: User{
+			Id:   "10086",
+			Name: "goal",
+		},
+		Followers: []User{
+			{
+				Id:   "1",
+				Name: "goal",
+			},
+			{
+				Id:   "2",
+				Name: "goal",
+			},
+		},
+	})
+
+	for i := 0; i < b.N; i++ {
+		serializer.Parse(serialized)
+	}
+}
+
+/**
+goos: darwin
+goarch: amd64
+pkg: github.com/goal-web/serialization/tests
+cpu: Intel(R) Core(TM) i7-7660U CPU @ 2.50GHz
 BenchmarkClassSerialize
-BenchmarkClassSerialize-4   	   95265	     11996 ns/op
+BenchmarkClassSerialize-4   	  285645	      4218 ns/op
 */
 func BenchmarkClassSerialize(b *testing.B) {
+	serializer := serialization.NewClassSerializer(container.New())
+
+	serializer.Register(UserClass)
+	serializer.Register(class.Make(new(Detail)))
+
+	for i := 0; i < b.N; i++ {
+		serializer.Serialize(Detail{
+			Title: "goal",
+			User: User{
+				Id:   "10086",
+				Name: "goal",
+			},
+			Followers: []User{
+				{
+					Id:   "1",
+					Name: "goal",
+				},
+				{
+					Id:   "2",
+					Name: "goal",
+				},
+			},
+		})
+
+	}
+}
+
+/**
+goos: darwin
+goarch: amd64
+pkg: github.com/goal-web/serialization/tests
+cpu: Intel(R) Core(TM) i7-7660U CPU @ 2.50GHz
+BenchmarkClassSerializer
+BenchmarkClassSerializer-4   	   95265	     11996 ns/op
+*/
+func BenchmarkClassSerializer(b *testing.B) {
 	serializer := serialization.NewClassSerializer(container.New())
 
 	serializer.Register(class.Make(new(Detail)))
