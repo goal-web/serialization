@@ -6,6 +6,7 @@ import (
 	"github.com/goal-web/serialization/serializers"
 	"github.com/goal-web/supports/class"
 	"reflect"
+	"sync"
 )
 
 type Class struct {
@@ -18,6 +19,7 @@ func NewClassSerializer(container contracts.Container) contracts.ClassSerializer
 		container:  container,
 		classes:    map[string]contracts.Class{},
 		serializer: serializers.Json{},
+		mutex:      sync.RWMutex{},
 	}
 }
 
@@ -25,10 +27,13 @@ type Serializer struct {
 	container  contracts.Container
 	classes    map[string]contracts.Class
 	serializer contracts.Serializer
+	mutex      sync.RWMutex
 }
 
 func (this *Serializer) Register(class contracts.Class) {
+	this.mutex.Lock()
 	this.classes[class.ClassName()] = class
+	this.mutex.Unlock()
 }
 
 func (this *Serializer) Serialize(instance interface{}) string {
