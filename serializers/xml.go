@@ -21,7 +21,7 @@ func (x Xml) Serialize(i interface{}) string {
 }
 
 func (x Xml) Unserialize(s string, i interface{}) error {
-	if err := xml.Unmarshal([]byte(s), &i); err != nil {
+	if err := xml.Unmarshal([]byte(s), i); err != nil {
 		return err
 	}
 	return nil

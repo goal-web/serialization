@@ -21,7 +21,7 @@ func (j Json) Serialize(i interface{}) string {
 }
 
 func (j Json) Unserialize(s string, i interface{}) error {
-	if err := json.Unmarshal([]byte(s), &i); err != nil {
+	if err := json.Unmarshal([]byte(s), i); err != nil {
 		return err
 	}
 	return nil

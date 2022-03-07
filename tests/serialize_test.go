@@ -38,6 +38,7 @@ func TestJsonSerialize(t *testing.T) {
 
 	var user User
 	assert.Nil(t, json.Unserialize(jsonStr, &user))
+	assert.True(t, user.Id == "10086")
 	fmt.Println(user)
 }
 
@@ -51,6 +52,7 @@ func TestXmlSerialize(t *testing.T) {
 	var user User
 	assert.True(t, serialized == "<User><id>10086</id><name>goal</name></User>")
 	assert.Nil(t, serializer.Unserialize(serialized, &user))
+	assert.True(t, user.Id == "10086")
 	fmt.Println(user)
 }
 
@@ -80,6 +82,7 @@ func TestComplexJsonSerialize(t *testing.T) {
 
 	var detail Detail
 	assert.Nil(t, json.Unserialize(jsonStr, &detail))
+	assert.True(t, detail.User.Id == "10086")
 	fmt.Println(detail)
 }
 
