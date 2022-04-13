@@ -17,23 +17,19 @@ type Class struct {
 func NewClassSerializer(container contracts.Container) contracts.ClassSerializer {
 	return &Serializer{
 		container:  container,
-		classes:    map[string]contracts.Class{},
+		classes:    sync.Map{},
 		serializer: serializers.Json{},
-		mutex:      sync.RWMutex{},
 	}
 }
 
 type Serializer struct {
 	container  contracts.Container
-	classes    map[string]contracts.Class
+	classes    sync.Map
 	serializer contracts.Serializer
-	mutex      sync.RWMutex
 }
 
 func (this *Serializer) Register(class contracts.Class) {
-	this.mutex.Lock()
-	this.classes[class.ClassName()] = class
-	this.mutex.Unlock()
+	this.classes.Store(class.ClassName(), class)
 }
 
 func (this *Serializer) Serialize(instance interface{}) string {
@@ -49,11 +45,14 @@ func (this *Serializer) Parse(serialized string) (interface{}, error) {
 		return nil, err
 	}
 
-	if this.classes[c.Class] == nil {
+	classItem, exists := this.classes.Load(c.Class)
+	if !exists {
 		return nil, errors.New("unregistered class")
 	}
 
-	instance := reflect.New(this.classes[c.Class].GetType()).Interface()
+	targetClass := classItem.(contracts.Class)
+
+	instance := reflect.New(targetClass.GetType()).Interface()
 
 	if err := this.serializer.Unserialize(c.Payload, instance); err != nil {
 		return nil, err
