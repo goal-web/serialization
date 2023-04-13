@@ -8,7 +8,7 @@ import (
 type Gob struct {
 }
 
-func (j Gob) Serialize(i interface{}) string {
+func (j Gob) Serialize(i any) string {
 	var buf bytes.Buffer
 
 	enc := gob.NewEncoder(&buf)
@@ -21,7 +21,7 @@ func (j Gob) Serialize(i interface{}) string {
 
 }
 
-func (j Gob) Unserialize(s string, i interface{}) error {
+func (j Gob) Unserialize(s string, i any) error {
 	if err := gob.NewDecoder(bytes.NewBufferString(s)).Decode(i); err != nil {
 		return err
 	}

@@ -8,8 +8,12 @@ type ServiceProvider struct {
 	app contracts.Application
 }
 
-func (this *ServiceProvider) Register(application contracts.Application) {
-	this.app = application
+func NewService() contracts.ServiceProvider {
+	return &ServiceProvider{}
+}
+
+func (provider *ServiceProvider) Register(application contracts.Application) {
+	provider.app = application
 	application.Singleton("serialization", func() contracts.Serialization {
 		return New()
 	})
@@ -25,9 +29,9 @@ func (this *ServiceProvider) Register(application contracts.Application) {
 	})
 }
 
-func (this *ServiceProvider) Start() error {
+func (provider *ServiceProvider) Start() error {
 	return nil
 }
 
-func (this *ServiceProvider) Stop() {
+func (provider *ServiceProvider) Stop() {
 }

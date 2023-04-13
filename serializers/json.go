@@ -7,7 +7,7 @@ import (
 type Json struct {
 }
 
-func (j Json) Serialize(i interface{}) string {
+func (j Json) Serialize(i any) string {
 	var (
 		buf []byte
 		err error
@@ -20,7 +20,7 @@ func (j Json) Serialize(i interface{}) string {
 	return string(buf)
 }
 
-func (j Json) Unserialize(s string, i interface{}) error {
+func (j Json) Unserialize(s string, i any) error {
 	if err := json.Unmarshal([]byte(s), i); err != nil {
 		return err
 	}

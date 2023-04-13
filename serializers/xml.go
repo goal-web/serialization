@@ -7,7 +7,7 @@ import (
 type Xml struct {
 }
 
-func (x Xml) Serialize(i interface{}) string {
+func (x Xml) Serialize(i any) string {
 	var (
 		buf []byte
 		err error
@@ -20,7 +20,7 @@ func (x Xml) Serialize(i interface{}) string {
 	return string(buf)
 }
 
-func (x Xml) Unserialize(s string, i interface{}) error {
+func (x Xml) Unserialize(s string, i any) error {
 	if err := xml.Unmarshal([]byte(s), i); err != nil {
 		return err
 	}

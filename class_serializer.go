@@ -28,38 +28,38 @@ type Serializer struct {
 	serializer contracts.Serializer
 }
 
-func (this *Serializer) Register(class contracts.Class) {
-	this.classes.Store(class.ClassName(), class)
+func (serializer *Serializer) Register(class contracts.Class[any]) {
+	serializer.classes.Store(class.ClassName(), class)
 }
 
-func (this *Serializer) Serialize(instance interface{}) string {
-	return this.serializer.Serialize(Class{
-		Class:   class.Make(instance).ClassName(),
-		Payload: this.serializer.Serialize(instance),
+func (serializer *Serializer) Serialize(instance any) string {
+	return serializer.serializer.Serialize(Class{
+		Class:   class.Any(instance).ClassName(),
+		Payload: serializer.serializer.Serialize(instance),
 	})
 }
 
-func (this *Serializer) Parse(serialized string) (interface{}, error) {
+func (serializer *Serializer) Parse(serialized string) (any, error) {
 	var c Class
-	if err := this.serializer.Unserialize(serialized, &c); err != nil {
+	if err := serializer.serializer.Unserialize(serialized, &c); err != nil {
 		return nil, err
 	}
 
-	classItem, exists := this.classes.Load(c.Class)
+	classItem, exists := serializer.classes.Load(c.Class)
 	if !exists {
 		return nil, errors.New("unregistered class")
 	}
 
-	targetClass := classItem.(contracts.Class)
+	targetClass := classItem.(contracts.Class[any])
 
 	instance := reflect.New(targetClass.GetType()).Interface()
 
-	if err := this.serializer.Unserialize(c.Payload, instance); err != nil {
+	if err := serializer.serializer.Unserialize(c.Payload, instance); err != nil {
 		return nil, err
 	}
 
 	if component, isComponent := instance.(contracts.Component); isComponent {
-		component.Construct(this.container)
+		component.Construct(serializer.container)
 		return component, nil
 	}
 

@@ -22,7 +22,7 @@ type Detail struct {
 }
 
 var (
-	UserClass = class.Make(new(User))
+	UserClass = class.Any(User{})
 )
 
 func TestJsonSerialize(t *testing.T) {
@@ -105,7 +105,7 @@ func TestClassSerializer(t *testing.T) {
 	serializer := serialization.NewClassSerializer(container.New())
 
 	serializer.Register(UserClass)
-	serializer.Register(class.Make(new(Detail)))
+	serializer.Register(class.Any(Detail{}))
 
 	serialized := serializer.Serialize(Detail{
 		Title: "goal",
@@ -132,7 +132,8 @@ func TestClassSerializer(t *testing.T) {
 	fmt.Println(detail)
 }
 
-/**
+/*
+*
 goos: darwin
 goarch: amd64
 pkg: github.com/goal-web/serialization/tests
@@ -144,7 +145,7 @@ func BenchmarkClassUnserialize(b *testing.B) {
 	serializer := serialization.NewClassSerializer(container.New())
 
 	serializer.Register(UserClass)
-	serializer.Register(class.Make(new(Detail)))
+	serializer.Register(class.Any(Detail{}))
 
 	serialized := serializer.Serialize(Detail{
 		Title: "goal",
@@ -169,7 +170,8 @@ func BenchmarkClassUnserialize(b *testing.B) {
 	}
 }
 
-/**
+/*
+*
 goos: darwin
 goarch: amd64
 pkg: github.com/goal-web/serialization/tests
@@ -181,7 +183,7 @@ func BenchmarkClassSerialize(b *testing.B) {
 	serializer := serialization.NewClassSerializer(container.New())
 
 	serializer.Register(UserClass)
-	serializer.Register(class.Make(new(Detail)))
+	serializer.Register(class.Any(Detail{}))
 
 	for i := 0; i < b.N; i++ {
 		serializer.Serialize(Detail{
@@ -205,7 +207,8 @@ func BenchmarkClassSerialize(b *testing.B) {
 	}
 }
 
-/**
+/*
+*
 goos: darwin
 goarch: amd64
 pkg: github.com/goal-web/serialization/tests
@@ -216,7 +219,7 @@ BenchmarkClassSerializer-4   	   95265	     11996 ns/op
 func BenchmarkClassSerializer(b *testing.B) {
 	serializer := serialization.NewClassSerializer(container.New())
 
-	serializer.Register(class.Make(new(Detail)))
+	serializer.Register(class.Any(Detail{}))
 	detail := Detail{
 		Title: "goal",
 		User: User{
@@ -241,7 +244,8 @@ func BenchmarkClassSerializer(b *testing.B) {
 	}
 }
 
-/**
+/*
+*
 goos: darwin
 goarch: amd64
 pkg: github.com/goal-web/serialization/tests
@@ -263,7 +267,8 @@ func BenchmarkJsonSerialize(b *testing.B) {
 	}
 }
 
-/**
+/*
+*
 goos: darwin
 goarch: amd64
 pkg: github.com/goal-web/serialization/tests
@@ -285,7 +290,8 @@ func BenchmarkGobSerialize(b *testing.B) {
 	}
 }
 
-/**
+/*
+*
 goos: darwin
 goarch: amd64
 pkg: github.com/goal-web/serialization/tests
