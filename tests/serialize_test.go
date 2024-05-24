@@ -166,7 +166,7 @@ func BenchmarkClassUnserialize(b *testing.B) {
 	})
 
 	for i := 0; i < b.N; i++ {
-		serializer.Parse(serialized)
+		_, _ = serializer.Parse(serialized)
 	}
 }
 
