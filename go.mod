@@ -2,9 +2,7 @@ module github.com/goal-web/serialization
 
 go 1.23.1
 
-require (
-	github.com/stretchr/testify v1.7.0
-)
+require github.com/stretchr/testify v1.7.0
 
 require (
 	github.com/apex/log v1.9.0 // indirect
