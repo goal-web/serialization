@@ -2,11 +2,12 @@ package serialization
 
 import (
 	"errors"
+	"reflect"
+	"sync"
+
 	"github.com/goal-web/contracts"
 	"github.com/goal-web/serialization/serializers"
 	"github.com/goal-web/supports/class"
-	"reflect"
-	"sync"
 )
 
 type Class struct {
@@ -15,37 +16,37 @@ type Class struct {
 }
 
 func NewClassSerializer(container contracts.Container) contracts.ClassSerializer {
-	return &Serializer{
+	return &serializer{
 		container:  container,
 		classes:    sync.Map{},
 		serializer: serializers.Json{},
 	}
 }
 
-type Serializer struct {
+type serializer struct {
 	container  contracts.Container
 	classes    sync.Map
 	serializer contracts.Serializer
 }
 
-func (serializer *Serializer) Register(class contracts.Class[any]) {
-	serializer.classes.Store(class.ClassName(), class)
+func (s *serializer) Register(class contracts.Class[any]) {
+	s.classes.Store(class.ClassName(), class)
 }
 
-func (serializer *Serializer) Serialize(instance any) string {
-	return serializer.serializer.Serialize(Class{
+func (s *serializer) Serialize(instance any) string {
+	return s.serializer.Serialize(Class{
 		Class:   class.Any(instance).ClassName(),
-		Payload: serializer.serializer.Serialize(instance),
+		Payload: s.serializer.Serialize(instance),
 	})
 }
 
-func (serializer *Serializer) Parse(serialized string) (any, error) {
+func (s *serializer) Parse(serialized string) (any, error) {
 	var c Class
-	if err := serializer.serializer.Unserialize(serialized, &c); err != nil {
+	if err := s.serializer.Unserialize(serialized, &c); err != nil {
 		return nil, err
 	}
 
-	classItem, exists := serializer.classes.Load(c.Class)
+	classItem, exists := s.classes.Load(c.Class)
 	if !exists {
 		return nil, errors.New("unregistered class")
 	}
@@ -54,12 +55,12 @@ func (serializer *Serializer) Parse(serialized string) (any, error) {
 
 	instance := reflect.New(targetClass.GetType()).Interface()
 
-	if err := serializer.serializer.Unserialize(c.Payload, instance); err != nil {
+	if err := s.serializer.Unserialize(c.Payload, instance); err != nil {
 		return nil, err
 	}
 
 	if component, isComponent := instance.(contracts.Component); isComponent {
-		component.Construct(serializer.container)
+		component.Construct(s.container)
 		return component, nil
 	}
 
